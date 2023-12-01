@@ -148,52 +148,130 @@ class App extends React.Component {
     })
   }
 
-  render () {
+  render() {
+    // Retrieve values from local storage
+    const username = localStorage.getItem('username');
+    const s3Link = localStorage.getItem('s3Link');
+
+    const userInfoStyle = {
+      position: 'fixed',
+      bottom: '50px', // Adjusted bottom value for a higher position
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '300px',
+      background: '#FFF',
+      padding: '10px',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+      zIndex: '9999', // Ensure it appears above other elements
+    };
+
+    const greetingStyle = {
+      fontSize: '18px',
+      margin: '5px 0',
+    };
+
+    const imageStyle = {
+      width: '50px',
+      height: '50px',
+      borderRadius: '50%',
+      margin: '5px 0',
+    };
+
     switch (this.state.step) {
       case 1:
-        return <WelcomeComponent nextStep={this.nextStep} />
+        return <WelcomeComponent nextStep={this.nextStep} />;
       case 2:
-        return <CityDropDownComponent id='cityDropdown'
-                      value={this.state.currentCity}
-                      currencyType={this.state.currencyType} 
-                      onChange={this.handleCurrentCity}
-                      nextStep={this.nextStep}
-                      previousStep={this.previousStep}
-                      stepNumber={this.state.step}
-                      resetToFirstStep={this.resetToFirstStep} />
+        return (
+          <div>
+            <CityDropDownComponent
+              id="cityDropdown"
+              value={this.state.currentCity}
+              currencyType={this.state.currencyType}
+              onChange={this.handleCurrentCity}
+              nextStep={this.nextStep}
+              previousStep={this.previousStep}
+              stepNumber={this.state.step}
+              resetToFirstStep={this.resetToFirstStep}
+            />
+            {username && s3Link && (
+              <div style={userInfoStyle}>
+                <p style={greetingStyle}>Hello, {username}!</p>
+                <img src={s3Link} alt="Profile" style={imageStyle} />
+              </div>
+            )}
+          </div>
+        );
       case 3:
-        return <CurrentCostOfLivingComponent value={this.state.currentCostOfLiving} 
-                      currencyValue={this.state.currencyType}
-                      onChange={this.handleCurrentCostOfLivingInput} 
-                      onChangeOfCurrencyType={this.handleCurrencyType}
-                      nextStep={this.nextStep}
-                      previousStep={this.previousStep}
-                      resetToFirstStep={this.resetToFirstStep} />
+        return (
+          <div>
+            <CurrentCostOfLivingComponent
+              value={this.state.currentCostOfLiving}
+              currencyValue={this.state.currencyType}
+              onChange={this.handleCurrentCostOfLivingInput}
+              onChangeOfCurrencyType={this.handleCurrencyType}
+              nextStep={this.nextStep}
+              previousStep={this.previousStep}
+              resetToFirstStep={this.resetToFirstStep}
+            />
+            {username && s3Link && (
+              <div style={userInfoStyle}>
+                <p style={greetingStyle}>Hello, {username}!</p>
+                <img src={s3Link} alt="Profile" style={imageStyle} />
+              </div>
+            )}
+          </div>
+        );
       case 4:
-        return <CityDropDownComponent id='cityDropdown'
-                      value={this.state.newCity} 
-                      onChange={this.handleNewCity}
-                      nextStep={this.calculateNewCostOfLivingAndNextStep}
-                      previousStep={this.previousStep}
-                      stepNumber={this.state.step}
-                      resetToFirstStep={this.resetToFirstStep} />
+        return (
+          <div>
+            <CityDropDownComponent
+              id="cityDropdown"
+              value={this.state.newCity}
+              onChange={this.handleNewCity}
+              nextStep={this.calculateNewCostOfLivingAndNextStep}
+              previousStep={this.previousStep}
+              stepNumber={this.state.step}
+              resetToFirstStep={this.resetToFirstStep}
+            />
+            {username && s3Link && (
+              <div style={userInfoStyle}>
+                <p style={greetingStyle}>Hello, {username}!</p>
+                <img src={s3Link} alt="Profile" style={imageStyle} />
+              </div>
+            )}
+          </div>
+        );
       case 5:
-        return <NewCostOfLivingComponent key={this.state.refreshComponent}
-                      value={this.state.newCostOfLiving}
-                      exactNewCostOfLivingValue={this.state.exactNewCostOfLivingValue}
-                      currentCostOfLiving={this.state.currentCostOfLiving}
-                      currentCity={this.state.currentCity}
-                      newCity={this.state.newCity}
-                      newCitySlug={this.state.newCitySlug}
-                      currencyType={this.state.currencyType}
-                      rentPercentChange={this.state.rentPercentChange}
-                      groceriesPercentChange={this.state.groceriesPercentChange}
-                      restaurantPercentChange={this.state.restaurantPercentChange}
-                      purchasingPercentChange={this.state.purchasingPercentChange}
-                      resetToFirstStep={this.resetToFirstStep}
-                      changeCurrencyTypeAndValue={this.changeCurrencyTypeAndValue}
-                      handleNewCityFunction={this.handleNewCity}
-                      handleRefreshCityFunction={this.handleRefreshCity} />
+        return (
+          <div>
+            <NewCostOfLivingComponent
+              key={this.state.refreshComponent}
+              value={this.state.newCostOfLiving}
+              exactNewCostOfLivingValue={this.state.exactNewCostOfLivingValue}
+              currentCostOfLiving={this.state.currentCostOfLiving}
+              currentCity={this.state.currentCity}
+              newCity={this.state.newCity}
+              newCitySlug={this.state.newCitySlug}
+              currencyType={this.state.currencyType}
+              rentPercentChange={this.state.rentPercentChange}
+              groceriesPercentChange={this.state.groceriesPercentChange}
+              restaurantPercentChange={this.state.restaurantPercentChange}
+              purchasingPercentChange={this.state.purchasingPercentChange}
+              resetToFirstStep={this.resetToFirstStep}
+              changeCurrencyTypeAndValue={this.changeCurrencyTypeAndValue}
+              handleNewCityFunction={this.handleNewCity}
+              handleRefreshCityFunction={this.handleRefreshCity}
+            />
+            {username && s3Link && (
+              <div style={userInfoStyle}>
+                <p style={greetingStyle}>Hello, {username}!</p>
+                <img src={s3Link} alt="Profile" style={imageStyle} />
+              </div>
+            )}
+          </div>
+        );
       default:
         return null;
     }

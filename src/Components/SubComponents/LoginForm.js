@@ -1,4 +1,3 @@
-// LoginForm.js
 import React from 'react';
 
 const modalStyle = {
@@ -31,33 +30,109 @@ const buttonStyle = {
   margin: '0 5px',
 };
 
-const LoginForm = ({ closeForms, welcomeColor }) => {
-  const handleLogin = () => {
-    // Add your login logic here
-    // You can make an API call or handle authentication as needed
-    console.log('Login logic here');
-    closeForms(); // Close the login form after successful login
-  };
+class LoginForm extends React.Component {
+  constructor(props) {
+    super(props);
 
-  return (
-    <div style={modalStyle}>
-      <h2 style={{ color: welcomeColor }}>Login</h2>
-      <form>
-        <label>
-          Username:
-          <input type="text" name="username" style={inputStyle} />
-        </label>
-        <br />
-        <label>
-          Password:
-          <input type="password" name="password" style={inputStyle} />
-        </label>
-        <br />
-        <button type="button" onClick={handleLogin} style={buttonStyle}>Login</button>
-        <button type="button" onClick={closeForms} style={buttonStyle}>Close</button>
-      </form>
-    </div>
-  );
-};
+    this.state = {
+      username: '',
+      password: '',
+      error: '', // New state to store error messages
+    };
+
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+  }
+
+  handleInputChange(event) {
+    const { name, value } = event.target;
+    this.setState({ [name]: value, error: '' }); // Clear error message on input change
+  }
+
+  handleLogin() {
+    const { username, password } = this.state;
+    const lambdaUrl = 'https://pjx9dst1l4.execute-api.us-east-1.amazonaws.com/production/login';
+
+    const requestData = {
+      username,
+      password,
+    };
+
+    fetch(lambdaUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Login successful:', data);
+        const parsedData = JSON.parse(data.body);
+        console.log('Parsed data:', parsedData);
+
+        localStorage.setItem('username', parsedData.username);
+        localStorage.setItem('s3Link', parsedData.profile_image_url);
+
+        this.props.closeForms();
+      })
+      .catch(error => {
+        console.error('Error calling Lambda function:', error);
+
+        // Handle different error scenarios
+        if (error.message.includes('Password is incorrect')) {
+          this.setState({ error: 'Incorrect password' });
+        } else if (error.message.includes('Username is not registered')) {
+          this.setState({ error: 'Username not registered' });
+        } else {
+          this.setState({ error: 'An error occurred during login' });
+        }
+      });
+  }
+
+  render() {
+    return (
+      <div style={modalStyle}>
+        <h2 style={{ color: this.props.welcomeColor }}>Login</h2>
+        <form>
+          <label>
+            Username:
+            <input
+              type="text"
+              name="username"
+              value={this.state.username}
+              onChange={this.handleInputChange}
+              style={inputStyle}
+            />
+          </label>
+          <br />
+          <label>
+            Password:
+            <input
+              type="password"
+              name="password"
+              value={this.state.password}
+              onChange={this.handleInputChange}
+              style={inputStyle}
+            />
+          </label>
+          <br />
+          {this.state.error && <p style={{ color: 'red' }}>{this.state.error}</p>}
+          <button type="button" onClick={this.handleLogin} style={buttonStyle}>
+            Login
+          </button>
+          <button type="button" onClick={this.props.closeForms} style={buttonStyle}>
+            Close
+          </button>
+        </form>
+      </div>
+    );
+  }
+}
 
 export default LoginForm;

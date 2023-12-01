@@ -71,7 +71,9 @@ class WelcomeComponent extends React.Component {
     this.state = {
       openDetails: false,
       showLogin: false,
-      showSignup: false
+      showSignup: false,
+	  username: localStorage.getItem('username'), 
+      s3Link: localStorage.getItem('s3Link')
     };
 
     this.openDetails = this.openDetails.bind(this);
@@ -101,12 +103,48 @@ class WelcomeComponent extends React.Component {
     this.setState({ showLogin: false, showSignup: false });
   }
 
-  render () {
+  render() {
+    // Retrieve values from local storage
+    const username = localStorage.getItem('username');
+    const s3Link = localStorage.getItem('s3Link');
+
+    const userInfoStyle = {
+      position: 'fixed',
+      bottom: '50px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '300px',
+      background: '#FFF',
+      padding: '10px',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+      zIndex: '9999',
+    };
+
+    const greetingStyle = {
+      fontSize: '18px',
+      margin: '5px 0',
+    };
+
+    const imageStyle = {
+      width: '50px',
+      height: '50px',
+      borderRadius: '50%',
+      margin: '5px 0',
+    };
+
     return (
       <div style={inherit_height}>
         {(!this.state.openDetails) && <div className="aligner">
           <div>
             <div className='welcome-block'>
+              {(username && s3Link) &&
+                <div style={userInfoStyle}>
+                  <p style={greetingStyle}>Hello, {username}!</p>
+                  <img src={s3Link} alt="Profile" style={imageStyle} />
+                </div>
+              }
               <img src={logo} className='welcome-logo' alt='logo' />
               <h3 className='welcome-intro'>citii.<span style={primary_color}>io</span></h3>
               <p className='welcome-description'> Ever thought how far your current salary will go in another city? This simple app will calculate how much more (or less) you would need in order to maintain the same standard of living in another city!</p>
