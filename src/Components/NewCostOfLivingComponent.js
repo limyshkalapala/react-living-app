@@ -1,5 +1,6 @@
 import React from 'react';
 import Cities from './SubComponents/Cities.js';
+import ReportsComponent from './ReportsComponent.js';
 import SpotAHomeDetailsComponent from './SubComponents/SpotAHomeDetailsComponent.js';
 import banner_image_url from '../sky_banner.png';
 
@@ -200,7 +201,9 @@ class NewCostOfLivingComponent extends React.Component {
 				currencyResponseRates: '',
 				salary: '',
 				onLastPage: true,
-				openSpotAHomeDetails: false
+				openSpotAHomeDetails: false,
+				savingReport: false,
+				showReportsModal: false,
 			}
 		} else {
 			this.state = {
@@ -369,6 +372,66 @@ class NewCostOfLivingComponent extends React.Component {
 			openSpotAHomeDetails: false 
 		});
 	}
+	sendDataToLambda = () => {
+		const lambdaEndpoint = 'https://pjx9dst1l4.execute-api.us-east-1.amazonaws.com/production/report';
+	
+		const username = localStorage.getItem('username') || 'Guest';
+	
+		const payload = {
+			user: {
+			  userName: localStorage.getItem('username') || 'Guest',
+			},
+			city: this.props.newCity,
+			salary: this.state.salary,
+			position: this.state.position,
+			currentCurrency: this.state.currentCurrency,
+			rentPercentChange: this.props.rentPercentChange,
+			groceriesPercentChange: this.props.groceriesPercentChange,
+			restaurantPercentChange: this.props.restaurantPercentChange,
+			purchasingPercentChange: this.props.purchasingPercentChange,
+			timestamp: new Date().toISOString(),
+		  };
+		  
+		  console.log('payload: ', payload);
+
+		  
+		fetch(lambdaEndpoint, {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify(payload),
+		})
+		  .then(response => response.json())
+		  .then(data => {
+			// Handle Lambda response if needed
+			console.log(data);
+		  })
+		  .catch(error => {
+			// Handle errors
+			console.error(error);
+		  });
+	  }
+	  openReportsModal = () => {
+		this.setState({
+		  showReportsModal: true,
+		});
+	  };
+	
+	  closeReportsModal = () => {
+		this.setState({
+		  showReportsModal: false,
+		});
+	  };
+	
+	  saveReport = () => {
+		this.sendDataToLambda();
+		alert('Report saved successfully!');
+		
+	  }
+	  
+	  
+	
 
 	render () {
 		let rentPercentChange;
@@ -418,7 +481,18 @@ class NewCostOfLivingComponent extends React.Component {
 				{!this.state.openSpotAHomeDetails && <div>
 					<div style={buttons_container}>
 						<button style={continue_button} onClick={this.props.resetToFirstStep}>Menu</button>
-					</div>
+						<button style={continue_button} onClick={this.saveReport}>Save Report</button>
+						<button
+          style={continue_button}
+          onClick={this.openReportsModal}
+        >
+          Access All Reports
+        </button>
+
+        {this.state.showReportsModal && (
+          <ReportsComponent onClose={this.closeReportsModal} />
+        )}
+      </div>
 					{(this.props.currencyType === dataSet[this.props.currentCity].currency_type) && <div>
 						<div className="search_question_container tooltip-left" data-tooltip={"Pick another city to compare its Cost of Living to living in -  " + this.props.currentCity + " with a net income of " + this.state.currentCurrency + " " + this.props.currentCostOfLiving + "."}>
 							<i style={information_icon} className="fa fa-question" aria-hidden="true"></i>

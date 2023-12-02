@@ -65,14 +65,14 @@ let login_signup_button = {
 
 class WelcomeComponent extends React.Component {
 
-  constructor () {
+  constructor() {
     super();
 
     this.state = {
       openDetails: false,
       showLogin: false,
       showSignup: false,
-	  username: localStorage.getItem('username'), 
+      username: localStorage.getItem('username'),
       s3Link: localStorage.getItem('s3Link')
     };
 
@@ -83,25 +83,33 @@ class WelcomeComponent extends React.Component {
     this.closeForms = this.closeForms.bind(this);
   }
 
-  openDetails () {
+  openDetails() {
     this.setState({ openDetails: true });
   }
 
-  closeDetails () {
+  closeDetails() {
     this.setState({ openDetails: false });
   }
 
-  showLoginForm () {
+  showLoginForm() {
     this.setState({ showLogin: true, showSignup: false });
   }
 
-  showSignupForm () {
+  showSignupForm() {
     this.setState({ showLogin: false, showSignup: true });
   }
 
-  closeForms () {
+  closeForms() {
     this.setState({ showLogin: false, showSignup: false });
   }
+
+  // Add a new method to handle signout
+  handleSignout = () => {
+    // Remove username from local storage or perform any other signout logic
+    localStorage.removeItem('username');
+    // Optionally, you can update the state to reflect the signout
+    this.setState({ username: null });
+  };
 
   render() {
     // Retrieve values from local storage
@@ -143,6 +151,7 @@ class WelcomeComponent extends React.Component {
                 <div style={userInfoStyle}>
                   <p style={greetingStyle}>Hello, {username}!</p>
                   <img src={s3Link} alt="Profile" style={imageStyle} />
+                  <button style={login_signup_button} onClick={this.handleSignout}>Signout</button>
                 </div>
               }
               <img src={logo} className='welcome-logo' alt='logo' />
@@ -151,8 +160,8 @@ class WelcomeComponent extends React.Component {
               <div style={buttons_container}>
                 <button style={details_button} onClick={this.openDetails}>Details</button>
                 <button className='continue-button' onClick={this.props.nextStep}>Start</button>
-                <button style={login_signup_button} onClick={this.showLoginForm}>Login</button>
-                <button style={login_signup_button} onClick={this.showSignupForm}>Signup</button>
+                {!username && <button style={login_signup_button} onClick={this.showLoginForm}>Login</button>}
+                {!username && <button style={login_signup_button} onClick={this.showSignupForm}>Signup</button>}
               </div>
             </div>
           </div>
